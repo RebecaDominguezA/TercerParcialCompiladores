@@ -566,4 +566,93 @@ public class ASDR implements Parser{
         }
         //ELSE VACIO
     }
+
+    // UNARY -> ! UNARY | - UNARY | CALL
+    private void UNARY(){
+        if(hayErrores)
+            return;
+            
+        if(preanalisis.tipo == TipoToken.BANG){
+            match(TipoToken.BANG);
+            UNARY();
+        }
+        else if(preanalisis.tipo == TipoToken.RESTA){
+            match(TipoToken.RESTA);
+            UNARY();
+        }
+        else if (preanalisis.tipo == TipoToken.TRUE
+            || preanalisis.tipo == TipoToken.FALSE
+            || preanalisis.tipo == TipoToken.NULL
+            || preanalisis.tipo == TipoToken.ENTERO
+            || preanalisis.tipo == TipoToken.DECIMAL
+            || preanalisis.tipo == TipoToken.STRING
+            || preanalisis.tipo == TipoToken.IDENTIFICADOR
+            || preanalisis.tipo == TipoToken.PARENTESIS_ABRE){
+            CALL();
+        }else{
+            hayErrores = true;
+            System.out.println("Se esperaba 'BANG' or 'RESTA' or 'TRUE' or 'FALSE'"+
+            "or 'NULL' or 'ENTERO' or 'DECIMAL' or 'STRING'  or 'IDENTIFICADOR' or 'PARENTESIS_ABRE'.");
+        }
+    }
+
+    // CALL -> PRIMARY CALL_2
+    private void CALL(){
+        if(hayErrores)
+            return;
+        
+        PRIMARY();
+        CALL_2();
+    }
+
+    //   CALL_2 -> ( ARGUMENTS_OPC ) CALL_2 | E
+    private void CALL_2(){
+        if(hayErrores)
+            return;
+            
+        if(preanalisis.tipo == TipoToken.PARENTESIS_ABRE){
+            match(TipoToken.PARENTESIS_ABRE);
+            ARGUMENTS_OPC();
+            match(TipoToken.PARENTESIS_CIERRA);
+            CALL_2();
+        }
+        //ELSE vacio 
+    }
+
+    //   PRIMARY -> true | false | null | number | string | id | ( EXPRESSION )
+    private void PRIMARY(){
+        if(hayErrores)
+            return;
+            
+        if(preanalisis.tipo == TipoToken.TRUE){
+            match(TipoToken.TRUE);
+        }
+        else if(preanalisis.tipo == TipoToken.FALSE){
+            match(TipoToken.FALSE);
+        }
+        else if(preanalisis.tipo == TipoToken.NULL){
+            match(TipoToken.NULL);
+        }
+        else if(preanalisis.tipo == TipoToken.DECIMAL){
+            match(TipoToken.DECIMAL);
+        }
+        else if(preanalisis.tipo == TipoToken.ENTERO){
+            match(TipoToken.ENTERO);
+        }
+        else if(preanalisis.tipo == TipoToken.STRING){
+            match(TipoToken.STRING);
+        }
+        else if(preanalisis.tipo == TipoToken.IDENTIFICADOR){
+            match(TipoToken.IDENTIFICADOR);
+        }
+        else if(preanalisis.tipo == TipoToken.PARENTESIS_ABRE){
+            match(TipoToken.PARENTESIS_ABRE);
+            EXPRESSION();
+            match(TipoToken.PARENTESIS_CIERRA);
+        }else{
+            hayErrores = true;
+            System.out.println("Se esperaba 'TRUE' or 'FALSE'"+
+            "or 'NULL' or 'ENTERO' or 'DECIMAL' or 'STRING'  or 'IDENTIFICADOR' or 'PARENTESIS_ABRE'.");
+        }
+    }
 }
