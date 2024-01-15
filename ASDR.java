@@ -77,7 +77,84 @@ public class ASDR implements Parser{
 
 
     //Aquui den
+// FUN_DECL -> fun FUNCTION
+    private void FUN_DECL(){
+        if(hayErrores)
+            return;
+        
+        if(preanalisis.tipo == TipoToken.FUN){
+            match(TipoToken.FUN);
+            FUNCTION();
+        }
+        else{
+            hayErrores = true;
+            System.out.println("Se esperaba un 'FUN'");
+        }
 
+    }
+
+    // VAR_DECL -> var id VAR_INIT
+    private void VAR_DECL(){
+        if(hayErrores)
+            return;
+        if(preanalisis.tipo == TipoToken.VAR){
+            match(TipoToken.VAR);
+            match(TipoToken.IDENTIFICADOR);
+            //System.out.println("checkpoint");
+            //for(Token token : tokens){
+                //System.out.println(token);
+            //}
+            VAR_INIT();
+            match(TipoToken.PUNTO_Y_COMA);
+        }
+        else{
+            hayErrores = true;
+            System.out.println("Se esperaba un 'VAR'");
+        }
+    }
+    
+    // STATEMENT -> EXPR_STMT | FOR_STMT | IF_STMT
+    //              | PRINT_STMT | RETURN_STMT | WHILE_STMT | BLOCK
+    private void STATEMENT(){
+        if(hayErrores)
+            return;
+        
+        if (preanalisis.tipo == TipoToken.BANG
+            || preanalisis.tipo == TipoToken.RESTA
+            || preanalisis.tipo == TipoToken.TRUE
+            || preanalisis.tipo == TipoToken.FALSE
+            || preanalisis.tipo == TipoToken.NULL
+            || preanalisis.tipo == TipoToken.ENTERO
+            || preanalisis.tipo == TipoToken.DECIMAL
+            || preanalisis.tipo == TipoToken.STRING
+            || preanalisis.tipo == TipoToken.IDENTIFICADOR
+            || preanalisis.tipo == TipoToken.PARENTESIS_ABRE){
+            EXPR_STMT();
+        }
+        else if(preanalisis.tipo == TipoToken.FOR){
+            FOR_STMT();
+        }
+        else if(preanalisis.tipo == TipoToken.IF){
+            IF_STMT();
+        }
+        else if(preanalisis.tipo == TipoToken.PRINT){
+            PRINT_STMT();
+        }
+        else if(preanalisis.tipo == TipoToken.RETURN){
+            RETURN_STMT();
+        }
+        else if(preanalisis.tipo == TipoToken.WHILE){
+            WHILE_STMT();
+        }
+        else if(preanalisis.tipo == TipoToken.LLAVE_ABRE){
+            BLOCK();
+        }else{
+            hayErrores = true;
+            System.out.println("Se esperaba 'BANG' or 'RESTA' or 'TRUE' or 'FALSE'"+
+            "or 'NULL' or 'ENTERO' or 'DECIMAL' or 'STRING'  or 'IDENTIFICADOR' or 'PARENTESIS_ABRE' "+
+            "or 'FOR' or 'IF' or 'PRINT' or 'RETURN' or 'WHILE' or '{'");
+        }
+    }
     //fin
   
 }
