@@ -76,8 +76,8 @@ public class ASDR implements Parser{
     }
 
 
-    //Aquui den
-// FUN_DECL -> fun FUNCTION
+    
+    // FUN_DECL -> fun FUNCTION
     private void FUN_DECL(){
         if(hayErrores)
             return;
@@ -155,6 +155,8 @@ public class ASDR implements Parser{
             "or 'FOR' or 'IF' or 'PRINT' or 'RETURN' or 'WHILE' or '{'");
         }
     }
+
+    //Aquui beca
     //fin
   
 }
