@@ -385,4 +385,12 @@ public class ASDR implements Parser{
         LOGIC_OR();
         ASSIGNMENT_OPC();
     }
+
+    //den
+
+    //den
+
+    //beca
+
+    //beca
 }
