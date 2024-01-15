@@ -386,10 +386,6 @@ public class ASDR implements Parser{
         ASSIGNMENT_OPC();
     }
 
-    //den
-
-
-
 //   ASSIGNMENT_OPC -> = EXPRESSION | E
     private void ASSIGNMENT_OPC(){
         if(hayErrores)
@@ -433,9 +429,85 @@ public class ASDR implements Parser{
         LOGIC_AND_2();
     }
 
-    //den
+    //   LOGIC_AND_2 -> and EQUALITY LOGIC_AND_2 | E
+    private void LOGIC_AND_2(){
+        if(hayErrores)
+            return;
+            
+        if(preanalisis.tipo == TipoToken.AND){
+            match(TipoToken.AND);
+            EQUALITY();
+            LOGIC_AND_2();
+        }
+        //ELSE vacio 
+    }
 
-    //beca
+    //   EQUALITY -> COMPARISON EQUALITY_2
+    private void EQUALITY(){
+        if(hayErrores)
+            return;
+            
+        COMPARISON();
+        EQUALITY_2();
+    }
 
-    //beca
+    //   EQUALITY_2 -> != COMPARISON EQUALITY_2 | == COMPARISON EQUALITY_2 | E
+    private void EQUALITY_2(){
+        if(hayErrores)
+            return;
+            
+        if(preanalisis.tipo == TipoToken.DIFERENTE_QUE){
+            match(TipoToken.DIFERENTE_QUE);
+            COMPARISON();
+            EQUALITY_2();
+        }
+        else if(preanalisis.tipo == TipoToken.IGUAL_IGUAL){
+            match(TipoToken.IGUAL_IGUAL);
+            COMPARISON();
+            EQUALITY_2();
+        }
+        //ELSE vacio 
+    }
+
+
+    //   COMPARISON -> TERM COMPARISON_2
+    private void COMPARISON(){
+        if(hayErrores)
+            return;
+        
+        TERM();
+        COMPARISON_2();
+    }
+
+    //   COMPARISON_2 -> > TERM COMPARISON_2 | >= TERM COMPARISON_2 |
+    //                   < TERM COMPARISON_2 | <= TERM COMPARISON_2 | E
+    private void COMPARISON_2(){
+        if(hayErrores)
+            return;
+            
+        if(preanalisis.tipo == TipoToken.MAYOR_QUE){
+            match(TipoToken.MAYOR_QUE);
+            TERM();
+            COMPARISON_2();
+
+        }
+        else if(preanalisis.tipo == TipoToken.MAYOR_IGUAL_QUE){
+            match(TipoToken.MAYOR_IGUAL_QUE);
+            TERM();
+            COMPARISON_2();
+            
+        }
+        else if(preanalisis.tipo == TipoToken.MENOR_QUE){
+            match(TipoToken.MENOR_QUE);
+            TERM();
+            COMPARISON_2();
+        }
+        else if(preanalisis.tipo == TipoToken.MENOR_IGUAL_QUE){
+            match(TipoToken.MENOR_IGUAL_QUE);
+            TERM();
+            COMPARISON_2();
+            
+        }
+        //Else vacio
+    }
 }
