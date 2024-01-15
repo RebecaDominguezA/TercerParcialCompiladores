@@ -200,6 +200,103 @@ public class ASDR implements Parser{
         match(TipoToken.PUNTO_Y_COMA);
         
     }
+    //  FOR_STMT -> for ( FOR_STMT_1 FOR_STMT_2 FOR_STMT_3 ) STATEMENT
+    private void FOR_STMT(){
+        if(hayErrores)
+            return;
+        
+        match(TipoToken.FOR);
+        match(TipoToken.PARENTESIS_ABRE);
+        FOR_STMT_1();
+        FOR_STMT_2();
+        FOR_STMT_3();
+        match(TipoToken.PARENTESIS_CIERRA);
+        STATEMENT();
+    }
+
+    //   if (EXPRESSION) STATEMENT ELSE_STATEMENT
+    private void IF_STMT(){
+        if(hayErrores)
+            return;
+        
+        match(TipoToken.IF);
+        match(TipoToken.PARENTESIS_ABRE);
+        EXPRESSION();
+        match(TipoToken.PARENTESIS_CIERRA);
+        STATEMENT();
+        ELSE_STATEMENT();
+    }
+
+    //   PRINT_STMT -> print EXPRESSION;
+    private void PRINT_STMT(){
+        if(hayErrores)
+            return;
+        
+        match(TipoToken.PRINT);
+        EXPRESSION();
+        match(TipoToken.PUNTO_Y_COMA);
+    }
+
+    //   RETURN_STMT -> return RETURN_EXP_OPC ;
+    private void RETURN_STMT(){
+        if(hayErrores)
+            return;
+        
+        match(TipoToken.RETURN);
+        RETURN_EXP_OPC();
+        match(TipoToken.PUNTO_Y_COMA);
+    }
     
+    //   WHILE_STMT -> while ( EXPRESSION ) STATEMENT
+    private void WHILE_STMT(){
+        if(hayErrores)
+            return;
+        
+        match(TipoToken.WHILE);
+        match(TipoToken.PARENTESIS_ABRE);
+        EXPRESSION();
+        match(TipoToken.PARENTESIS_CIERRA);
+        STATEMENT();
+    }
+
+    //   BLOCK -> { DECLARATION }
+    private void BLOCK(){
+        if(hayErrores)
+            return;
+        
+        match(TipoToken.LLAVE_ABRE);
+        DECLARATION();
+        match(TipoToken.LLAVE_CIERRA);
+    }
+
+    //   FOR_STMT_1 -> VAR_DECL | EXPR_STMT | ;
+    private void FOR_STMT_1(){
+        if(hayErrores)
+            return;
+        
+        if(preanalisis.tipo == TipoToken.VAR){
+            VAR_DECL();
+        }
+        else if (preanalisis.tipo == TipoToken.BANG
+            || preanalisis.tipo == TipoToken.RESTA
+            || preanalisis.tipo == TipoToken.TRUE
+            || preanalisis.tipo == TipoToken.FALSE
+            || preanalisis.tipo == TipoToken.NULL
+            || preanalisis.tipo == TipoToken.ENTERO
+            || preanalisis.tipo == TipoToken.DECIMAL
+            || preanalisis.tipo == TipoToken.STRING
+            || preanalisis.tipo == TipoToken.IDENTIFICADOR
+            || preanalisis.tipo == TipoToken.PARENTESIS_ABRE){
+            EXPR_STMT();
+        }
+        else if (preanalisis.tipo == TipoToken.PUNTO_Y_COMA){
+            match(TipoToken.PUNTO_Y_COMA);
+        }
+        else{
+            hayErrores = true;
+            System.out.println("Se esperaba un 'VAR' or 'BANG' or 'RESTA' or 'TRUE' or 'FALSE'"+ 
+            "or 'NULL' or 'ENTERO' or 'DECIMAL' or 'STRING'  or 'IDENTIFICADOR' or 'PARENTESIS_ABRE' or ';'");
+        }
+    }
   
 }
