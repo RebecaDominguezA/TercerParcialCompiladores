@@ -655,4 +655,12 @@ public class ASDR implements Parser{
             "or 'NULL' or 'ENTERO' or 'DECIMAL' or 'STRING'  or 'IDENTIFICADOR' or 'PARENTESIS_ABRE'.");
         }
     }
+
+    //den
+
+    //dem
+
+    //beca
+
+    //beca
 }
