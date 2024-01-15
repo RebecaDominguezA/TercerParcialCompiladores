@@ -510,4 +510,60 @@ public class ASDR implements Parser{
         }
         //Else vacio
     }
+
+    //   TERM -> FACTOR TERM_2
+    private void TERM(){
+        if(hayErrores)
+            return;
+        
+        FACTOR();
+        TERM_2();
+    }
+
+    // TERM_2 -> - FACTOR TERM_2 | + FACTOR TERM_2 | E
+    private void TERM_2(){
+        if(hayErrores)
+            return;
+            
+        if(preanalisis.tipo == TipoToken.RESTA){
+            match(TipoToken.RESTA);
+            FACTOR();
+            TERM_2();
+
+        }
+        else if(preanalisis.tipo == TipoToken.SUMA){
+            match(TipoToken.SUMA);
+            FACTOR();
+            TERM_2();
+        }
+        //ELSE VACIO
+    }
+
+    // FACTOR -> UNARY FACTOR_2
+    private void FACTOR(){
+        if(hayErrores)
+            return;
+        
+        UNARY();
+        FACTOR_2();
+    }
+
+    // FACTOR_2 -> / UNARY FACTOR_2 | * UNARY FACTOR_2 | E
+    private void FACTOR_2(){
+        if(hayErrores)
+            return;
+            
+        if(preanalisis.tipo == TipoToken.SLASH){
+            match(TipoToken.SLASH);
+            UNARY();
+            FACTOR_2();
+
+        }
+        else if(preanalisis.tipo == TipoToken.ESTRELLA){
+            match(TipoToken.ESTRELLA);
+            UNARY();
+            FACTOR_2();
+        }
+        //ELSE VACIO
+    }
 }
