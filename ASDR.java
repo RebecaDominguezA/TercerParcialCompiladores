@@ -388,6 +388,51 @@ public class ASDR implements Parser{
 
     //den
 
+
+
+//   ASSIGNMENT_OPC -> = EXPRESSION | E
+    private void ASSIGNMENT_OPC(){
+        if(hayErrores)
+            return;
+
+        if(preanalisis.tipo == TipoToken.IGUAL){
+            match(TipoToken.IGUAL);
+            EXPRESSION();
+        }
+        //ELSE vacio    
+    }
+
+    //   LOGIC_OR -> LOGIC_AND LOGIC_OR_2
+    private void LOGIC_OR(){
+        if(hayErrores)
+            return;
+            
+        LOGIC_AND();
+        LOGIC_OR_2();
+    }
+
+    //   LOGIC_OR_2 -> or LOGIC_AND LOGIC_OR_2 | E
+    private void LOGIC_OR_2(){
+        if(hayErrores)
+            return;
+            
+        if(preanalisis.tipo == TipoToken.OR){
+            match(TipoToken.OR);
+            LOGIC_AND();
+            LOGIC_OR_2();
+        }
+        //ELSE vacio  
+    }
+
+    //   LOGIC_AND -> EQUALITY LOGIC_AND_2
+    private void LOGIC_AND(){
+        if(hayErrores)
+            return;
+            
+        EQUALITY();
+        LOGIC_AND_2();
+    }
+
     //den
 
     //beca
