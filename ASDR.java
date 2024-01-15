@@ -656,10 +656,6 @@ public class ASDR implements Parser{
         }
     }
 
-    //den
-
-
-
 
 //   FUNCTIONS -> FUN_DECL FUNCTIONS | E
     private void FUNCTIONS(){
@@ -698,9 +694,58 @@ public class ASDR implements Parser{
         }
         //ELSE vacio 
     }
-    //dem
+    //ELSE_STATEMENT();
+    //   ARGUMENTS_OPC -> EXPRESSION ARGUMENTS | E
+    private void ARGUMENTS_OPC(){
+        if (preanalisis.tipo == TipoToken.BANG
+            || preanalisis.tipo == TipoToken.RESTA
+            || preanalisis.tipo == TipoToken.TRUE
+            || preanalisis.tipo == TipoToken.FALSE
+            || preanalisis.tipo == TipoToken.NULL
+            || preanalisis.tipo == TipoToken.ENTERO
+            || preanalisis.tipo == TipoToken.DECIMAL
+            || preanalisis.tipo == TipoToken.STRING
+            || preanalisis.tipo == TipoToken.IDENTIFICADOR
+            || preanalisis.tipo == TipoToken.PARENTESIS_ABRE){
+            EXPRESSION();
+            ARGUMENTS();
+        }
+        //ELSE vacio 
+    }
 
-    //beca
+    //   ARGUMENTS -> , EXPRESSION ARGUMENTS | E
+    private void ARGUMENTS(){
+        if(preanalisis.tipo == TipoToken.COMA){
+            match(TipoToken.COMA);
+            EXPRESSION();
+            ARGUMENTS();
+        }
+        //ELSE vacio 
+    }
+    private void match(TipoToken tt){
+        if(preanalisis.tipo == tt){
+            i++;
+            preanalisis = tokens.get(i);
+        }
+        else{
+            hayErrores = true;
+            System.out.println("Error encontrado");
+        }
 
-    //beca
+    }
+    /* 
+    public void match(TipoToken token) {
+        if (!tokens.isEmpty()) {
+            tokens.remove(i); // Eliminar el elemento en el índice 0 si la lista no está vacía
+            preanalisis = this.tokens.get(i);
+            //System.out.println("Nuevo preanalisis."+preanalisis);
+        } else {
+            // Manejo para el caso en que la lista está vacía
+            System.out.println("La lista está vacía. No se puede eliminar ningún elemento.");
+        }
+        
+    }
+    */
+
+}
 }
