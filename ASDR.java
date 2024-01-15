@@ -658,6 +658,46 @@ public class ASDR implements Parser{
 
     //den
 
+
+
+
+//   FUNCTIONS -> FUN_DECL FUNCTIONS | E
+    private void FUNCTIONS(){
+        if(preanalisis.tipo == TipoToken.FUN){
+            FUN_DECL();
+            FUNCTIONS();
+        }
+        //ELSE vacio 
+    }
+
+    //   PARAMETERS_OPC -> PARAMETERS | E
+    private void PARAMETERS_OPC(){
+        if(preanalisis.tipo == TipoToken.IDENTIFICADOR){
+            PARAMETERS();
+        }
+        //ELSE vacio 
+    }
+
+    //   PARAMETERS -> id PARAMETERS_2
+    private void PARAMETERS(){
+        if(preanalisis.tipo == TipoToken.IDENTIFICADOR){
+            match(TipoToken.IDENTIFICADOR);
+            PARAMETERS_2();
+        }else{
+            hayErrores = true;
+            System.out.println("Se esperaba un 'identificador'");
+        }
+    }
+
+    //   PARAMETERS_2 -> , id PARAMETERS_2 | E
+    private void PARAMETERS_2(){
+        if(preanalisis.tipo == TipoToken.COMA){
+            match(TipoToken.COMA);
+            match(TipoToken.IDENTIFICADOR);
+            PARAMETERS_2();
+        }
+        //ELSE vacio 
+    }
     //dem
 
     //beca
