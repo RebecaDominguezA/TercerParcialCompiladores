@@ -298,5 +298,91 @@ public class ASDR implements Parser{
             "or 'NULL' or 'ENTERO' or 'DECIMAL' or 'STRING'  or 'IDENTIFICADOR' or 'PARENTESIS_ABRE' or ';'");
         }
     }
-  
+    //   FOR_STMT_2 -> EXPRESSION ; | ;
+    private void FOR_STMT_2(){
+        if(hayErrores)
+            return;
+            
+        if (preanalisis.tipo == TipoToken.BANG
+            || preanalisis.tipo == TipoToken.RESTA
+            || preanalisis.tipo == TipoToken.TRUE
+            || preanalisis.tipo == TipoToken.FALSE
+            || preanalisis.tipo == TipoToken.NULL
+            || preanalisis.tipo == TipoToken.ENTERO
+            || preanalisis.tipo == TipoToken.DECIMAL
+            || preanalisis.tipo == TipoToken.STRING
+            || preanalisis.tipo == TipoToken.IDENTIFICADOR
+            || preanalisis.tipo == TipoToken.PARENTESIS_ABRE){
+            EXPRESSION();
+            match(TipoToken.PUNTO_Y_COMA);
+        }
+        else if (preanalisis.tipo == TipoToken.PUNTO_Y_COMA){
+            match(TipoToken.PUNTO_Y_COMA);
+        }
+        else{
+            hayErrores = true;
+            System.out.println("Se esperaba un 'BANG' or 'RESTA' or 'TRUE' or 'FALSE'"+ 
+            "or 'NULL' or 'ENTERO' or 'DECIMAL' or 'STRING'  or 'IDENTIFICADOR' or 'PARENTESIS_ABRE' or ';'");
+        }
+    }
+
+    //   FOR_STMT_3 -> EXPRESSION | E
+    private void FOR_STMT_3(){
+        if(hayErrores)
+            return;
+        if (preanalisis.tipo == TipoToken.BANG
+            || preanalisis.tipo == TipoToken.RESTA
+            || preanalisis.tipo == TipoToken.TRUE
+            || preanalisis.tipo == TipoToken.FALSE
+            || preanalisis.tipo == TipoToken.NULL
+            || preanalisis.tipo == TipoToken.ENTERO
+            || preanalisis.tipo == TipoToken.DECIMAL
+            || preanalisis.tipo == TipoToken.STRING
+            || preanalisis.tipo == TipoToken.IDENTIFICADOR
+            || preanalisis.tipo == TipoToken.PARENTESIS_ABRE){
+            EXPRESSION();
+        }
+        //else vacio
+    }
+
+    //   ELSE_STATEMENT -> else STATEMENT | E
+    private void ELSE_STATEMENT(){
+        if(hayErrores)
+            return;
+        
+        if(preanalisis.tipo == TipoToken.ELSE){
+            match(TipoToken.ELSE);
+            STATEMENT();
+        }
+        //else caso vacio
+    }
+
+    //   RETURN_EXP_OPC -> EXPRESSION | E
+    private void RETURN_EXP_OPC(){
+        if(hayErrores)
+            return;
+
+        if (preanalisis.tipo == TipoToken.BANG
+            || preanalisis.tipo == TipoToken.RESTA
+            || preanalisis.tipo == TipoToken.TRUE
+            || preanalisis.tipo == TipoToken.FALSE
+            || preanalisis.tipo == TipoToken.NULL
+            || preanalisis.tipo == TipoToken.ENTERO
+            || preanalisis.tipo == TipoToken.DECIMAL
+            || preanalisis.tipo == TipoToken.STRING
+            || preanalisis.tipo == TipoToken.IDENTIFICADOR
+            || preanalisis.tipo == TipoToken.PARENTESIS_ABRE){
+            EXPRESSION();
+        }
+        //else vacio
+    }
+
+    //   ASSIGNMENT -> LOGIC_OR ASSIGNMENT_OPC
+    private void ASSIGNMENT(){
+        if(hayErrores)
+            return;
+
+        LOGIC_OR();
+        ASSIGNMENT_OPC();
+    }
 }
