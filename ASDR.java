@@ -156,7 +156,50 @@ public class ASDR implements Parser{
         }
     }
 
-    //Aquui beca
-    //fin
+    // FUNCTION -> id ( PARAMETERS_OPC ) BLOCK
+    private void FUNCTION(){
+        if(hayErrores)
+            return;
+        if(preanalisis.tipo == TipoToken.IDENTIFICADOR){
+            match(TipoToken.IDENTIFICADOR);
+            match(TipoToken.PARENTESIS_ABRE);
+            PARAMETERS_OPC();
+            match(TipoToken.PARENTESIS_CIERRA);
+            BLOCK();
+        }else{
+            hayErrores = true;
+            System.out.println("Se esperaba 'IDENTIFICADOR'");
+        }
+    }
+
+    // VAR_INIT -> = EXPRESSION | E
+    private void VAR_INIT(){
+        if(hayErrores)
+            return;
+        if(preanalisis.tipo == TipoToken.IGUAL){
+            match(TipoToken.IGUAL);
+            EXPRESSION();
+        }
+        //else vacio
+         }
+    
+    //  EXPRESSION -> ASSIGNMENT
+    private void EXPRESSION(){
+        if(hayErrores)
+            return;
+        
+        ASSIGNMENT();  
+    }
+
+    //  EXPR_STMT -> EXPRESSION
+    private void EXPR_STMT(){
+        if(hayErrores)
+            return;
+        
+        EXPRESSION();
+        match(TipoToken.PUNTO_Y_COMA);
+        
+    }
+    
   
 }
