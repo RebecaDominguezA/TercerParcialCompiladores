@@ -936,4 +936,45 @@ public class AST implements Parser {
         //ELSE vacio 
         return argumentos;
     }
+    //   ARGUMENTS -> , EXPRESSION ARGUMENTS | E
+    public void ARGUMENTS(List <Expression> argumentos){
+        while (preanalisis.tipo == TipoToken.COMA) {
+            match(TipoToken.COMA);
+            argumentos.add(EXPRESSION());
+        }
+        //if(preanalisis.tipo == TipoToken.COMA){
+           // match(TipoToken.COMA);
+            //EXPRESSION();
+            //ARGUMENTS();
+        //}
+        //ELSE vacio 
+    }
+    
+    private void match(TipoToken tt){
+        if(preanalisis.tipo == tt){
+            i++;
+            preanalisis = tokens.get(i);
+        }
+        else{
+            hayErrores = true;
+            System.out.println("Error encontrado");
+        }
+
+    }
+    /* 
+    public void match(TipoToken token) {
+        if (!tokens.isEmpty()) {
+            tokens.remove(i); // Eliminar el elemento en el índice 0 si la lista no está vacía
+            preanalisis = this.tokens.get(i);
+            //System.out.println("Nuevo preanalisis."+preanalisis);
+        } else {
+            // Manejo para el caso en que la lista está vacía
+            System.out.println("La lista está vacía. No se puede eliminar ningún elemento.");
+        }
+        
+    }
+    */
+    private Token previous() {
+        return this.tokens.get(i - 1);
+    }
 }
