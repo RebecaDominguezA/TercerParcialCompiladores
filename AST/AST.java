@@ -204,9 +204,86 @@ public class AST implements Parser {
             return null;
         }
     }
-    //DEN
+    // FUNCTION -> id ( PARAMETERS_OPC ) BLOCK
+    public Statement FUNCTION(){
+        if(hayErrores)
+            return null;
+        if(preanalisis.tipo == TipoToken.IDENTIFICADOR){
+            match(TipoToken.IDENTIFICADOR);
+            Token name= previous();
+            match(TipoToken.PARENTESIS_ABRE);
+            List <Token> parametroslList = PARAMETERS_OPC();
+            match(TipoToken.PARENTESIS_CIERRA);
+            Statement StmtBlock = BLOCK();
+            return new StmtFunction(name, parametroslList, (StmtBlock) StmtBlock);
+        }else{
+            hayErrores = true;
+            System.out.println("Se esperaba 'IDENTIFICADOR'");
+            return null;
+        }
+    }
 
-    //BECA
+    // VAR_INIT -> = EXPRESSION | E
+    public Expression VAR_INIT(Expression expr){
+        if(hayErrores)
+            return null;
+        if(preanalisis.tipo == TipoToken.IGUAL){
+            match(TipoToken.IGUAL);
+            expr = EXPRESSION();
+        }
+        //else vacio
+        return expr;
+    }
+    
+    //  EXPRESSION -> ASSIGNMENT
+    public Expression EXPRESSION(){
+        if(hayErrores)
+            return null;
+        
+        return ASSIGNMENT();  
+    }
 
-    //BECA
+    //  EXPR_STMT -> EXPRESSION
+    public Statement EXPR_STMT(){
+        if(hayErrores)
+            return null;
+        
+        Expression exprEXPRESSION=EXPRESSION();
+        match(TipoToken.PUNTO_Y_COMA);
+        return new StmtExpression(exprEXPRESSION);
+        
+    }
+
+    //  FOR_STMT -> for ( FOR_STMT_1 FOR_STMT_2 FOR_STMT_3 ) STATEMENT
+    public Statement FOR_STMT(){
+        if(hayErrores)
+            return null;
+        
+        if (preanalisis.tipo== TipoToken.FOR) {
+            match(TipoToken.FOR);
+            match(TipoToken.PARENTESIS_ABRE);
+            Statement StmtFOR_STMT_1 = FOR_STMT_1();//Segun codigo del profe este es un inicializador
+            Expression exprFOR_STMT_2 = FOR_STMT_2();//este una condicion
+            Expression exprFOR_STMT_3 =FOR_STMT_3();//este un incremento
+    
+            match(TipoToken.PARENTESIS_CIERRA);
+
+            List<Statement> StateMts = new ArrayList<>();
+            //aplicamos add
+            StateMts.add(StmtFOR_STMT_1);
+            Statement StmtSTATEMENT =STATEMENT();//Es para bucles/ciclos
+            if (exprFOR_STMT_3==null){
+                StateMts.add(new StmtLoop(exprFOR_STMT_2, StmtSTATEMENT));
+            }else{
+                StateMts.add(new StmtLoop(exprFOR_STMT_2, new StmtBlock(Arrays.asList(StmtSTATEMENT,new StmtExpression(exprFOR_STMT_3)))   ));
+                //Aqui el incremento se mete dentro del bucle mencionado StmtSTATEMENT.
+            }
+            return new StmtBlock(StateMts);
+        }else{
+            hayErrores = true;
+            System.out.println("Se esperaba 'FOR'");
+            return null;
+        }
+        
+    }
 }
