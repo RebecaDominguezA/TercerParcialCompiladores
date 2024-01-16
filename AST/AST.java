@@ -871,9 +871,69 @@ public class AST implements Parser {
             return null;
         }
     }
-    //DEN
+    //   FUNCTIONS -> FUN_DECL FUNCTIONS | E
+    /*private void FUNCTIONS(){
+        if(preanalisis.tipo == TipoToken.FUN){
+            FUN_DECL();
+            FUNCTIONS();
+        }
+        //ELSE vacio 
+    }*/
 
-    //BECA
+    //   PARAMETERS_OPC -> PARAMETERS | E
+    public List<Token> PARAMETERS_OPC(){
+        List <Token> parametrosLista = new ArrayList<>();
+        if(preanalisis.tipo == TipoToken.IDENTIFICADOR){
+            PARAMETERS(parametrosLista);
+        }
+        //ELSE vacio 
+        return parametrosLista;
+    }
 
-    //BECA
+    //   PARAMETERS -> id PARAMETERS_2
+    public void PARAMETERS(List <Token> parametrosLista){
+        if(preanalisis.tipo == TipoToken.IDENTIFICADOR){
+            match(TipoToken.IDENTIFICADOR);
+            Token TokenParametros=previous();
+            parametrosLista.add(TokenParametros);
+            PARAMETERS_2(parametrosLista);
+        }else{
+            hayErrores = true;
+            System.out.println("Se esperaba un 'identificador'");
+            //return null;
+        }
+    }
+
+    //   PARAMETERS_2 -> , id PARAMETERS_2 | E
+    private void PARAMETERS_2(List <Token> parametrosLista){
+        while (preanalisis.tipo == TipoToken.COMA) {
+            match(TipoToken.COMA);
+            if (preanalisis.tipo == TipoToken.IDENTIFICADOR) {
+                match(TipoToken.IDENTIFICADOR);
+                Token Parametro_2adicional = previous();
+                parametrosLista.add(Parametro_2adicional);
+            }
+        }
+        //ELSE vacio 
+    }
+    
+    //   ARGUMENTS_OPC -> EXPRESSION ARGUMENTS | E
+    public List<Expression> ARGUMENTS_OPC(){
+        List <Expression> argumentos = new ArrayList<>();
+        if (preanalisis.tipo == TipoToken.BANG
+            || preanalisis.tipo == TipoToken.RESTA
+            || preanalisis.tipo == TipoToken.TRUE
+            || preanalisis.tipo == TipoToken.FALSE
+            || preanalisis.tipo == TipoToken.NULL
+            || preanalisis.tipo == TipoToken.ENTERO
+            || preanalisis.tipo == TipoToken.DECIMAL
+            || preanalisis.tipo == TipoToken.STRING
+            || preanalisis.tipo == TipoToken.IDENTIFICADOR
+            || preanalisis.tipo == TipoToken.PARENTESIS_ABRE){
+                argumentos.add(EXPRESSION());
+                ARGUMENTS(argumentos);
+        }
+        //ELSE vacio 
+        return argumentos;
+    }
 }
