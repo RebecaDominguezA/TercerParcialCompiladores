@@ -251,12 +251,16 @@ public class ASDR implements Parser{
     private void WHILE_STMT(){
         if(hayErrores)
             return;
-        
-        match(TipoToken.WHILE);
-        match(TipoToken.PARENTESIS_ABRE);
-        EXPRESSION();
-        match(TipoToken.PARENTESIS_CIERRA);
-        STATEMENT();
+        if (preanalisis.tipo==TipoToken.WHILE) {
+            match(TipoToken.WHILE);
+            match(TipoToken.PARENTESIS_ABRE);
+            EXPRESSION();
+            match(TipoToken.PARENTESIS_CIERRA);
+            STATEMENT();
+        }else{
+            hayErrores=true;
+            System.out.println("Se esperaba un 'WHILE'");
+        }
     }
 
     //   BLOCK -> { DECLARATION }
