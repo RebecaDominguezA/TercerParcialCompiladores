@@ -286,4 +286,122 @@ public class AST implements Parser {
         }
         
     }
+
+    //   if (EXPRESSION) STATEMENT ELSE_STATEMENT
+    public Statement IF_STMT(){
+        if(hayErrores)
+            return null;
+
+        Statement elseBranch = null;
+        if (preanalisis.tipo==TipoToken.IF) {
+            match(TipoToken.IF);
+            match(TipoToken.PARENTESIS_ABRE);
+            Expression condition =EXPRESSION();
+            match(TipoToken.PARENTESIS_CIERRA);
+            Statement thenBranch = STATEMENT();
+            if (preanalisis.tipo==TipoToken.ELSE)
+                elseBranch= ELSE_STATEMENT(elseBranch);
+            
+            return new StmtIf(condition, thenBranch, elseBranch);
+            
+        }else{
+            hayErrores=true;
+            System.out.println("Se esperaba un 'IF'");
+            return null;
+        }
+    }
+
+    //   PRINT_STMT -> print EXPRESSION;
+    public Statement PRINT_STMT(){
+        if(hayErrores)
+            return null;
+        
+        if (preanalisis.tipo==TipoToken.PRINT) {
+            match(TipoToken.PRINT);
+            Expression exprEXPRESSION=EXPRESSION();  
+            match(TipoToken.PUNTO_Y_COMA);  
+            return new StmtPrint(exprEXPRESSION);
+        }else{
+            hayErrores=true;
+            System.out.println("Se esperaba un 'PRINT'");
+            return null;
+        }
+    }
+
+    //   RETURN_STMT -> return RETURN_EXP_OPC ;
+    public Statement RETURN_STMT(){
+        if(hayErrores)
+            return null;
+        
+        Expression value=null;
+        if (preanalisis.tipo==TipoToken.RETURN) {
+            match(TipoToken.RETURN);
+            if (preanalisis.tipo == TipoToken.BANG
+            || preanalisis.tipo == TipoToken.RESTA
+            || preanalisis.tipo == TipoToken.TRUE
+            || preanalisis.tipo == TipoToken.FALSE
+            || preanalisis.tipo == TipoToken.NULL
+            || preanalisis.tipo == TipoToken.ENTERO
+            || preanalisis.tipo == TipoToken.DECIMAL
+            || preanalisis.tipo == TipoToken.STRING
+            || preanalisis.tipo == TipoToken.IDENTIFICADOR
+            || preanalisis.tipo == TipoToken.PARENTESIS_ABRE
+            ) {
+                value = RETURN_EXP_OPC(value);
+            }
+            match(TipoToken.PUNTO_Y_COMA);
+            return new StmtReturn(value);
+        }else{
+            hayErrores=true;
+            System.out.println("Se esperaba un 'RETURN'");
+            return null;
+        }
+        
+    }
+    
+    //   WHILE_STMT -> while ( EXPRESSION ) STATEMENT
+    public Statement WHILE_STMT(){
+        if(hayErrores)
+            return null;
+        
+        if (preanalisis.tipo==TipoToken.WHILE) {
+            match(TipoToken.WHILE);
+            match(TipoToken.PARENTESIS_ABRE);
+            Expression condition =EXPRESSION();
+            match(TipoToken.PARENTESIS_CIERRA);
+            Statement body=STATEMENT();
+            return new StmtLoop(condition, body);
+        }else{
+            hayErrores=true;
+            System.out.println("Se esperaba un 'WHILE'");
+            return null;
+        }
+    }
+
+    //   BLOCK -> { DECLARATION }
+    public Statement BLOCK(){
+        if(hayErrores)
+            return null;
+        
+        List <Statement> StateMts =new ArrayList<>();
+        if (preanalisis.tipo==TipoToken.LLAVE_ABRE) {
+            match(TipoToken.LLAVE_ABRE);
+            DECLARATION(StateMts);
+            match(TipoToken.LLAVE_CIERRA);
+            return new StmtBlock(StateMts);
+        }else{
+            hayErrores=true;
+            System.out.println("Se esperaba un 'LLAVE_ABRE'");
+            return null;
+        }
+        
+    }
+
+    //DEN
+
+    //DEN
+
+    //BECA
+
+    //BECA
 }
