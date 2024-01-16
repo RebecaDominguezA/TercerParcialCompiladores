@@ -800,6 +800,77 @@ public class AST implements Parser {
 
     //DEN
 
+// CALL -> PRIMARY CALL_2
+    public Expression CALL(){
+        Expression exprPRIMARY = PRIMARY();
+        exprPRIMARY = CALL_2(exprPRIMARY);
+        return exprPRIMARY;
+    }
+
+    //   CALL_2 -> ( ARGUMENTS_OPC ) CALL_2 | E
+    public Expression CALL_2(Expression callee){
+        if(hayErrores)
+            return null;
+
+        if(preanalisis.tipo == TipoToken.PARENTESIS_ABRE){
+            match(TipoToken.PARENTESIS_ABRE);
+            List<Expression> arguments = new ArrayList<>();
+            arguments = ARGUMENTS_OPC();
+            //se retorna un alista de argumentos
+            ExprCallFunction ecf = new ExprCallFunction(callee, arguments);
+            return CALL_2(ecf);
+        }
+        //ELSE vacio 
+        return callee;
+    }
+
+    //   PRIMARY -> true | false | null | number | string | id | ( EXPRESSION )
+    private Expression PRIMARY(){
+        if(preanalisis.tipo == TipoToken.TRUE){
+            match(TipoToken.TRUE);
+            return (new ExprLiteral(true));
+        }
+        else if(preanalisis.tipo == TipoToken.FALSE){
+            match(TipoToken.FALSE);
+            return new ExprLiteral(false);
+        }
+        else if(preanalisis.tipo == TipoToken.NULL){
+            match(TipoToken.NULL);
+            return new ExprLiteral(null);
+        }
+        else if(preanalisis.tipo == TipoToken.DECIMAL){
+            match(TipoToken.DECIMAL);
+            Token numero = previous();
+            return new ExprLiteral(numero.getLiteral());
+        }
+        else if(preanalisis.tipo == TipoToken.ENTERO){
+            match(TipoToken.ENTERO);
+            Token numero = previous();
+            return new ExprLiteral(numero.getLiteral());
+        }
+        else if(preanalisis.tipo == TipoToken.STRING){
+            match(TipoToken.STRING);
+            Token cadena = previous();
+            return new ExprLiteral(cadena.getLiteral());
+        }
+        else if(preanalisis.tipo == TipoToken.IDENTIFICADOR){
+            match(TipoToken.IDENTIFICADOR);
+            Token id = previous();
+            return new ExprVariable(id);
+        }
+        else if(preanalisis.tipo == TipoToken.PARENTESIS_ABRE){
+            match(TipoToken.PARENTESIS_ABRE);
+            Expression exprEXPRESSION = EXPRESSION();
+            // Tiene que ser cachado aquello que retorna
+            match(TipoToken.PARENTESIS_CIERRA);
+            return exprEXPRESSION; //new ExprGrouping(exprEXPRESSION);
+        }else{
+            hayErrores=true;
+            System.out.println("Se esperaba 'TRUE' or 'FALSE'"+
+            "or 'NULL' or 'ENTERO' or 'DECIMAL' or 'STRING'  or 'IDENTIFICADOR' or 'PARENTESIS_ABRE'.");
+            return null;
+        }
+    }
     //DEN
 
     //BECA
