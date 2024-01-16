@@ -607,4 +607,202 @@ public class AST implements Parser {
         //ELSE vacio 
         return left;
     }
+
+    //   EQUALITY -> COMPARISON EQUALITY_2
+    public Expression EQUALITY(){
+        if(hayErrores)
+            return null;
+            
+        Expression exprCOMPARISON = COMPARISON();
+        if (preanalisis.tipo == TipoToken.DIFERENTE_QUE
+            ||preanalisis.tipo == TipoToken.IGUAL_IGUAL) {
+            exprCOMPARISON= EQUALITY_2(exprCOMPARISON);
+        }
+        return exprCOMPARISON;
+    }
+
+    //   EQUALITY_2 -> != COMPARISON EQUALITY_2 | == COMPARISON EQUALITY_2 | E
+    public Expression EQUALITY_2(Expression left){
+        if(hayErrores)
+            return null;
+            
+        if(preanalisis.tipo == TipoToken.DIFERENTE_QUE){
+            match(TipoToken.DIFERENTE_QUE);
+            Token operator = previous();
+            Expression right=COMPARISON();
+            ExprBinary exprJunta = new ExprBinary(left, operator, right);
+            
+            return EQUALITY_2(exprJunta);
+        }
+        else if(preanalisis.tipo == TipoToken.IGUAL_IGUAL){
+            match(TipoToken.IGUAL_IGUAL);
+            Token operator = previous();
+            Expression right=COMPARISON();
+            ExprBinary exprJunta = new ExprBinary(left, operator, right);
+            
+            return EQUALITY_2(exprJunta);
+        }
+        //ELSE vacio 
+        return left;
+    }
+
+
+    //   COMPARISON -> TERM COMPARISON_2
+    public Expression COMPARISON(){
+        if(hayErrores)
+            return null;
+        
+        Expression exprTERM=TERM();
+        if (preanalisis.tipo == TipoToken.MAYOR_QUE 
+        ||preanalisis.tipo == TipoToken.MAYOR_IGUAL_QUE 
+        || preanalisis.tipo == TipoToken.MENOR_QUE 
+        || preanalisis.tipo == TipoToken.MENOR_IGUAL_QUE) {
+            exprTERM= COMPARISON_2(exprTERM);
+        }
+        return exprTERM;
+    }
+
+    //   COMPARISON_2 -> > TERM COMPARISON_2 | >= TERM COMPARISON_2 |
+    //                   < TERM COMPARISON_2 | <= TERM COMPARISON_2 | E
+    public Expression COMPARISON_2(Expression left){
+        if(hayErrores)
+            return null;
+            
+        if(preanalisis.tipo == TipoToken.MAYOR_QUE){
+            match(TipoToken.MAYOR_QUE);
+            Token operator = previous();
+            Expression right= TERM();
+            ExprBinary exprJunta= new ExprBinary(left, operator, right);
+            return COMPARISON_2(exprJunta);
+        }
+        else if(preanalisis.tipo == TipoToken.MAYOR_IGUAL_QUE){
+            match(TipoToken.MAYOR_IGUAL_QUE);
+            Token operator = previous();
+            Expression right= TERM();
+            ExprBinary exprJunta= new ExprBinary(left, operator, right);
+            return COMPARISON_2(exprJunta);
+            
+        }
+        else if(preanalisis.tipo == TipoToken.MENOR_QUE){
+            match(TipoToken.MENOR_QUE);
+            Token operator = previous();
+            Expression right= TERM();
+            ExprBinary exprJunta= new ExprBinary(left, operator, right);
+            return COMPARISON_2(exprJunta);
+        }
+        else if(preanalisis.tipo == TipoToken.MENOR_IGUAL_QUE){
+            match(TipoToken.MENOR_IGUAL_QUE);
+            Token operator = previous();
+            Expression right= TERM();
+            ExprBinary exprJunta= new ExprBinary(left, operator, right);
+            return COMPARISON_2(exprJunta);
+        }
+        //Else vacio
+        return left;
+    }
+
+    //   TERM -> FACTOR TERM_2
+    public Expression TERM(){
+        Expression exprFACTOR=FACTOR();
+        if (preanalisis.tipo == TipoToken.RESTA
+        || preanalisis.tipo == TipoToken.SUMA) {
+            exprFACTOR =TERM_2(exprFACTOR);
+        }
+        return exprFACTOR;
+    }
+
+    // TERM_2 -> - FACTOR TERM_2 | + FACTOR TERM_2 | E
+    public Expression TERM_2(Expression left){
+        if(hayErrores)
+            return null;
+            
+        if(preanalisis.tipo == TipoToken.RESTA){
+            match(TipoToken.RESTA);
+            Token operator = previous();
+            Expression right= FACTOR();
+            ExprBinary exprJunta= new ExprBinary(left, operator, right);
+            return TERM_2(exprJunta);
+        }
+        else if(preanalisis.tipo == TipoToken.SUMA){
+            match(TipoToken.SUMA);
+            Token operator = previous();
+            Expression right= FACTOR();
+            ExprBinary exprJunta= new ExprBinary(left, operator, right);
+            return TERM_2(exprJunta);
+        }
+        //ELSE VACIO
+        return left;
+    }
+
+    // FACTOR -> UNARY FACTOR_2
+    public Expression FACTOR(){
+        Expression exprUNARY = UNARY();
+        if (preanalisis.tipo == TipoToken.SLASH
+        || preanalisis.tipo == TipoToken.ESTRELLA) {
+            exprUNARY=FACTOR_2(exprUNARY);
+        }
+        return exprUNARY;
+    }
+
+    // FACTOR_2 -> / UNARY FACTOR_2 | * UNARY FACTOR_2 | E
+    public Expression FACTOR_2(Expression expr){
+        
+        if(preanalisis.tipo == TipoToken.SLASH){
+            match(TipoToken.SLASH);
+            Token operador = previous();
+            Expression expr2 = UNARY();
+            ExprBinary expb = new ExprBinary(expr, operador, expr2);
+            return FACTOR_2(expb);
+        }
+        else if(preanalisis.tipo == TipoToken.ESTRELLA){
+            
+            match(TipoToken.ESTRELLA);
+            Token operador = previous();
+            Expression expr2 = UNARY();
+            ExprBinary expb = new ExprBinary(expr, operador, expr2);
+            return FACTOR_2(expb);
+        }
+        //ELSE VACIO
+        return expr;
+    }
+
+    // UNARY -> ! UNARY | - UNARY | CALL
+    public Expression UNARY(){
+        if(hayErrores)
+            return null;
+
+        if(preanalisis.tipo == TipoToken.BANG){
+            match(TipoToken.BANG);
+            Token operador = previous();
+            Expression expr = UNARY();
+            return new ExprUnary(operador, expr);
+        }
+        else if(preanalisis.tipo == TipoToken.RESTA){
+            match(TipoToken.RESTA);
+            Token operador = previous();
+            Expression expr = UNARY();
+            return new ExprUnary(operador, expr);
+        }else if(preanalisis.tipo == TipoToken.TRUE 
+        || preanalisis.tipo == TipoToken.FALSE 
+        || preanalisis.tipo == TipoToken.NULL 
+        || preanalisis.tipo == TipoToken.DECIMAL 
+        || preanalisis.tipo == TipoToken.ENTERO
+        || preanalisis.tipo == TipoToken.STRING 
+        || preanalisis.tipo == TipoToken.IDENTIFICADOR 
+        || preanalisis.tipo == TipoToken.PARENTESIS_ABRE){
+            return CALL();
+        }else{
+            hayErrores=true;
+            System.out.println("Se esperaba BANG or Resta or TRUE or FALSE or NULL or DECIMAL or ENTERO or String or IDDENTIFICADOR o Parentesis_abre");
+            return null;
+        }
+    }
+
+    //DEN
+
+    //DEN
+
+    //BECA
+
+    //BECA
 }
