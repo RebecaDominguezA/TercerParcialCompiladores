@@ -518,9 +518,93 @@ public class AST implements Parser {
         //else vacio
         return value;
     }
-    //DEN
 
-    //BECA
+    //   ASSIGNMENT -> LOGIC_OR ASSIGNMENT_OPC
+    public Expression ASSIGNMENT(){
+        if(hayErrores)
+            return null;
+        Expression exprLOGIC_OR = LOGIC_OR();
+        if (preanalisis.tipo==TipoToken.IGUAL) 
+            exprLOGIC_OR=ASSIGNMENT_OPC(exprLOGIC_OR);
+        
+        return exprLOGIC_OR;
+        
+    }
 
-    //BECA
+    //   ASSIGNMENT_OPC -> = EXPRESSION | E
+    public Expression ASSIGNMENT_OPC(Expression expr){
+        if(hayErrores)
+            return null;
+
+        if(preanalisis.tipo == TipoToken.IGUAL){
+            //la lógica de asignación se aplica específicamente 
+            //cuando se trata de asignar valores a variables 
+            //en el código fuente durante el análisis sintáctico.
+            if (expr instanceof ExprVariable) {
+                Token name = ((ExprVariable) expr).name;
+                match(TipoToken.IGUAL);
+                Expression value = EXPRESSION();
+                return new ExprAssi(name, value);
+            }
+        }
+        //ELSE vacio 
+        return expr;
+    }
+
+    //   LOGIC_OR -> LOGIC_AND LOGIC_OR_2
+    public Expression LOGIC_OR(){
+        if(hayErrores)
+            return null;
+        
+        Expression exprLOGIC_AND =LOGIC_AND();
+        if (preanalisis.tipo == TipoToken.OR) {
+            exprLOGIC_AND = LOGIC_OR_2(exprLOGIC_AND);
+        }
+        return exprLOGIC_AND;
+    }
+
+    //   LOGIC_OR_2 -> or LOGIC_AND LOGIC_OR_2 | E
+    public Expression LOGIC_OR_2(Expression left){
+        if(hayErrores)
+            return null;
+            
+        if(preanalisis.tipo == TipoToken.OR){
+            match(TipoToken.OR);
+            Token operator = previous();
+            Expression right = LOGIC_AND();
+            ExprLogical exprJunta = new ExprLogical(left, operator, right);
+            return LOGIC_OR_2(exprJunta);
+        }
+        //ELSE vacio  
+        return left;
+    }
+
+    //   LOGIC_AND -> EQUALITY LOGIC_AND_2
+    public Expression LOGIC_AND(){
+        if(hayErrores)
+            return null;
+        
+        Expression exprEQUALITY = EQUALITY();
+        if (preanalisis.tipo==TipoToken.AND) {
+            exprEQUALITY = LOGIC_AND_2(exprEQUALITY);
+        }
+        return exprEQUALITY;
+    }
+
+    //   LOGIC_AND_2 -> and EQUALITY LOGIC_AND_2 | E
+    public Expression LOGIC_AND_2(Expression left){
+        if(hayErrores)
+            return null;
+            
+        if(preanalisis.tipo == TipoToken.AND){
+            match(TipoToken.AND);
+            Token operator = previous();
+            Expression right = EQUALITY();
+            ExprLogical exprJunta = new ExprLogical(left, operator, right);
+            
+            return LOGIC_AND_2(exprJunta);
+        }
+        //ELSE vacio 
+        return left;
+    }
 }
