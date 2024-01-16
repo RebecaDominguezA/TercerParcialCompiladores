@@ -399,6 +399,125 @@ public class AST implements Parser {
 
     //DEN
 
+
+//   FOR_STMT_1 -> VAR_DECL | EXPR_STMT | ;
+    public Statement FOR_STMT_1(){
+        if(hayErrores)
+            return null;
+        
+        if(preanalisis.tipo == TipoToken.VAR){
+            return VAR_DECL();
+        }
+        else if (preanalisis.tipo == TipoToken.BANG
+            || preanalisis.tipo == TipoToken.RESTA
+            || preanalisis.tipo == TipoToken.TRUE
+            || preanalisis.tipo == TipoToken.FALSE
+            || preanalisis.tipo == TipoToken.NULL
+            || preanalisis.tipo == TipoToken.ENTERO
+            || preanalisis.tipo == TipoToken.DECIMAL
+            || preanalisis.tipo == TipoToken.STRING
+            || preanalisis.tipo == TipoToken.IDENTIFICADOR
+            || preanalisis.tipo == TipoToken.PARENTESIS_ABRE){
+            return EXPR_STMT();
+        }
+        else if (preanalisis.tipo == TipoToken.PUNTO_Y_COMA){
+            match(TipoToken.PUNTO_Y_COMA);
+            return null;
+        }
+        else{
+            hayErrores = true;
+            System.out.println("Se esperaba un 'VAR' or 'BANG' or 'RESTA' or 'TRUE' or 'FALSE'"+ 
+            "or 'NULL' or 'ENTERO' or 'DECIMAL' or 'STRING'  or 'IDENTIFICADOR' or 'PARENTESIS_ABRE' or ';'");
+            return null;
+        }
+    }
+
+    //   FOR_STMT_2 -> EXPRESSION ; | ;
+    public Expression FOR_STMT_2(){
+        if(hayErrores)
+            return null;
+            
+        if (preanalisis.tipo == TipoToken.BANG
+            || preanalisis.tipo == TipoToken.RESTA
+            || preanalisis.tipo == TipoToken.TRUE
+            || preanalisis.tipo == TipoToken.FALSE
+            || preanalisis.tipo == TipoToken.NULL
+            || preanalisis.tipo == TipoToken.ENTERO
+            || preanalisis.tipo == TipoToken.DECIMAL
+            || preanalisis.tipo == TipoToken.STRING
+            || preanalisis.tipo == TipoToken.IDENTIFICADOR
+            || preanalisis.tipo == TipoToken.PARENTESIS_ABRE){
+            Expression exprEXPRESSION = EXPRESSION();
+            match(TipoToken.PUNTO_Y_COMA);
+            return exprEXPRESSION;
+        }
+        else if (preanalisis.tipo == TipoToken.PUNTO_Y_COMA){
+            match(TipoToken.PUNTO_Y_COMA);
+            return new ExprLiteral(true);
+        }
+        else{
+            hayErrores = true;
+            System.out.println("Se esperaba un 'BANG' or 'RESTA' or 'TRUE' or 'FALSE'"+ 
+            "or 'NULL' or 'ENTERO' or 'DECIMAL' or 'STRING'  or 'IDENTIFICADOR' or 'PARENTESIS_ABRE' or ';'");
+            return null;
+        }
+    }
+
+    //   FOR_STMT_3 -> EXPRESSION | E
+    public Expression FOR_STMT_3(){
+        if(hayErrores)
+            return null;
+        if (preanalisis.tipo == TipoToken.BANG
+            || preanalisis.tipo == TipoToken.RESTA
+            || preanalisis.tipo == TipoToken.TRUE
+            || preanalisis.tipo == TipoToken.FALSE
+            || preanalisis.tipo == TipoToken.NULL
+            || preanalisis.tipo == TipoToken.ENTERO
+            || preanalisis.tipo == TipoToken.DECIMAL
+            || preanalisis.tipo == TipoToken.STRING
+            || preanalisis.tipo == TipoToken.IDENTIFICADOR
+            || preanalisis.tipo == TipoToken.PARENTESIS_ABRE){
+            return EXPRESSION();
+        }
+        //else vacio
+        return null;
+    }
+
+    //   ELSE_STATEMENT -> else STATEMENT | E
+    public Statement ELSE_STATEMENT(Statement elseBranch){
+        if(hayErrores)
+            return null;
+        
+        if(preanalisis.tipo == TipoToken.ELSE){
+            match(TipoToken.ELSE);
+            elseBranch=STATEMENT();
+            return elseBranch;
+        }
+        //else caso vacio
+        return elseBranch;
+    }
+
+    //   RETURN_EXP_OPC -> EXPRESSION | E
+    public Expression RETURN_EXP_OPC(Expression value){
+        if(hayErrores)
+            return null;
+
+        if (preanalisis.tipo == TipoToken.BANG
+            || preanalisis.tipo == TipoToken.RESTA
+            || preanalisis.tipo == TipoToken.TRUE
+            || preanalisis.tipo == TipoToken.FALSE
+            || preanalisis.tipo == TipoToken.NULL
+            || preanalisis.tipo == TipoToken.ENTERO
+            || preanalisis.tipo == TipoToken.DECIMAL
+            || preanalisis.tipo == TipoToken.STRING
+            || preanalisis.tipo == TipoToken.IDENTIFICADOR
+            || preanalisis.tipo == TipoToken.PARENTESIS_ABRE){
+            value = EXPRESSION();
+            return value;
+        }
+        //else vacio
+        return value;
+    }
     //DEN
 
     //BECA
